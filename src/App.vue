@@ -1,26 +1,40 @@
 <template>
-<v-app>
- <v-navigation-drawer app>
-          <nav class="app__nav">
-            <w-nav />
-        </nav>
-  </v-navigation-drawer>
-  <v-app-bar app class="indigo">
-      <v-avatar color="red">
-          <v-icon dark>
-             mdi-account-circle
-          </v-icon>
-    </v-avatar>
-  </v-app-bar>
-  <v-main>
-        <div class="app__content">
-          <components :is="current_component" />
-        </div>
-  </v-main>
-  <v-footer class="app__footer">
-        <span>&copy;昆明智慧水利管理信息系统</span>
-  </v-footer>
-</v-app>
+  <v-app>
+    <v-navigation-drawer app dark v-if="show_nav">
+      <v-list-item-group
+        v-model="selected_item"
+      >
+        <v-list dense nav>
+          <v-list-item v-for="item in items" :key="item.title" @click="change_current_componemnt(item.title)" link>
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-list-item-group>
+    </v-navigation-drawer>
+    <v-app-bar app class="blue darken-1">
+      <v-app-bar-nav-icon class="white--text" @click="show_nav = !show_nav">
+      </v-app-bar-nav-icon>
+      <v-toolbar-title class="white--text"
+        >昆明智慧水利信息管理系统</v-toolbar-title
+      >
+      <v-spacer></v-spacer>
+      <w-drop class="mr-12">admin</w-drop>
+    </v-app-bar>
+    <v-main class="grey lighten-4">
+      <v-container fluid>
+        <components :is="current_component" />
+      </v-container>
+    </v-main>
+    <v-footer app class="blue darken-1">
+      <div class="mx-auto white--text">&copy;昆明xxx公司</div>
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
@@ -30,12 +44,23 @@ import Analysis from "./views/analysis";
 import Patrol from "./views/patrol";
 
 import WNav from "./components/wNav";
+import WDrop from "./components/wDrop";
 
 export default {
-  name: 'App',
+  name: "App",
   data() {
     return {
-      current_component: "Chief"
+      selected_item: 0,
+      show_nav: true,
+      current_component: "Chief",
+      items: [
+        { title: "河长管理", icon: "mdi-account" },
+        { title: "巡河管理", icon: "mdi-waves" },
+        { title: "施工建设管理", icon: "mdi-wrench" },
+        { title: "一张图平台", icon: "mdi-map-marker" },
+        { title: "大数据平台", icon: "mdi-database" },
+        { title: "系统管理", icon: "mdi-cog" },
+      ],
     };
   },
   components: {
@@ -43,7 +68,19 @@ export default {
     Building,
     Analysis,
     Patrol,
-    WNav
+    WNav,
+    WDrop,
+  },
+  methods: {
+    change_current_componemnt(title) {
+      if (title === "河长管理") {
+        this.current_component = "Chief";
+      } else if (title === "巡河管理") {
+        this.current_component = "Patrol";
+      } else if (title === "施工建设管理") {
+        this.current_component = "Building"
+      }
+    } 
   }
 };
 </script>

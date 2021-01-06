@@ -1,5 +1,5 @@
 <template>
     <div>
-    大数据分析
+    一张图
     </div>
 </template>

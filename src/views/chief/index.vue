@@ -1,8 +1,8 @@
 <template>
     <div class="chief">
-        <sidebar class="chief__sidebar">
+        <aside class="chief__sidebar">
             <v-treeview :items="tree_data"></v-treeview>
-        </sidebar>
+        </aside>
         <main class="chief__mian">
              <w-table :table-data="table_data" :headers="header_fileds"></w-table>
         </main>

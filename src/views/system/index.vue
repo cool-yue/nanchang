@@ -1,5 +1,5 @@
 <template>
     <div>
-    大数据分析
+    系统管理
     </div>
 </template>
