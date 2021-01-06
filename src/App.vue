@@ -1,28 +1,57 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<v-app>
+ <v-navigation-drawer app>
+          <nav class="app__nav">
+            <w-nav />
+        </nav>
+  </v-navigation-drawer>
+  <v-app-bar app class="indigo">
+      <v-avatar color="red">
+          <v-icon dark>
+             mdi-account-circle
+          </v-icon>
+    </v-avatar>
+  </v-app-bar>
+  <v-main>
+        <div class="app__content">
+          <components :is="current_component" />
+        </div>
+  </v-main>
+  <v-footer class="app__footer">
+        <span>&copy;昆明智慧水利管理信息系统</span>
+  </v-footer>
+</v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Chief from "./views/chief";
+import Building from "./views/building";
+import Analysis from "./views/analysis";
+import Patrol from "./views/patrol";
+
+import WNav from "./components/wNav";
 
 export default {
   name: 'App',
+  data() {
+    return {
+      current_component: "Chief"
+    };
+  },
   components: {
-    HelloWorld
+    Chief,
+    Building,
+    Analysis,
+    Patrol,
+    WNav
   }
-}
+};
 </script>
-
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.app__footer {
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+.app__main {
+  display: flex;
 }
 </style>
