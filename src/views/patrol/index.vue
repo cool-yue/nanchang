@@ -1,5 +1,5 @@
 <template>
-    <div>
+  <div>
     巡河管理
-    </div>
+  </div>
 </template>

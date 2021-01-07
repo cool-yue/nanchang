@@ -1,4 +1,3 @@
-
 <template>
   <v-card>
     <v-card-title>
@@ -19,24 +18,24 @@
 </template>
 <script>
 export default {
-    data() {
-        return {
-            search: ""
-        };
+  data() {
+    return {
+      search: ""
+    };
+  },
+  props: {
+    headers: {
+      type: Array,
+      default: () => {
+        return [];
+      }
     },
-    props: {
-        headers: {
-            type: Array,
-            default: () => {
-                return [];
-            }
-        },
-        tableData: {
-            type: Array,
-            default: () => {
-                return [];
-            }
-        }
+    tableData: {
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
+  }
 };
 </script>

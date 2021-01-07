@@ -1,5 +1,5 @@
 <template>
-    <div>
+  <div>
     施工建设管理
-    </div>
+  </div>
 </template>

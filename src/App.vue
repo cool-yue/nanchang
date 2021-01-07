@@ -1,11 +1,14 @@
 <template>
   <v-app>
     <v-navigation-drawer app dark v-if="show_nav">
-      <v-list-item-group
-        v-model="selected_item"
-      >
+      <v-list-item-group v-model="selected_item">
         <v-list dense nav>
-          <v-list-item v-for="item in items" :key="item.title" @click="change_current_componemnt(item.title)" link>
+          <v-list-item
+            v-for="item in items"
+            :key="item.title"
+            @click="change_current_componemnt(item.title)"
+            link
+          >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
@@ -27,7 +30,7 @@
       <w-drop class="mr-12">admin</w-drop>
     </v-app-bar>
     <v-main class="grey lighten-4">
-      <v-container fluid>
+      <v-container class="app__container">
         <components :is="current_component" />
       </v-container>
     </v-main>
@@ -42,8 +45,10 @@ import Chief from "./views/chief";
 import Building from "./views/building";
 import Analysis from "./views/analysis";
 import Patrol from "./views/patrol";
+import OneMap from "./views/map";
+import System from "./views/system";
 
-import WNav from "./components/wNav";
+//import WNav from "./components/wNav";
 import WDrop from "./components/wDrop";
 
 export default {
@@ -59,8 +64,8 @@ export default {
         { title: "施工建设管理", icon: "mdi-wrench" },
         { title: "一张图平台", icon: "mdi-map-marker" },
         { title: "大数据平台", icon: "mdi-database" },
-        { title: "系统管理", icon: "mdi-cog" },
-      ],
+        { title: "系统管理", icon: "mdi-cog" }
+      ]
     };
   },
   components: {
@@ -68,19 +73,27 @@ export default {
     Building,
     Analysis,
     Patrol,
-    WNav,
     WDrop,
+    OneMap,
+    System
   },
   methods: {
     change_current_componemnt(title) {
+      console.log(title);
       if (title === "河长管理") {
         this.current_component = "Chief";
       } else if (title === "巡河管理") {
         this.current_component = "Patrol";
       } else if (title === "施工建设管理") {
-        this.current_component = "Building"
+        this.current_component = "Building";
+      } else if (title === "一张图平台") {
+        this.current_component = "OneMap";
+      } else if (title === "大数据平台") {
+        this.current_component = "Analysis";
+      } else if (title === "系统管理") {
+        this.current_component = "System";
       }
-    } 
+    }
   }
 };
 </script>
@@ -90,5 +103,8 @@ export default {
 }
 .app__main {
   display: flex;
+}
+.app__container {
+  height: 100%;
 }
 </style>

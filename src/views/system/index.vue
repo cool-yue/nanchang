@@ -1,5 +1,5 @@
 <template>
-    <div>
+  <div>
     系统管理
-    </div>
+  </div>
 </template>
