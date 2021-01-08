@@ -1,26 +1,22 @@
 <template>
   <div class="chief">
-    <aside class="chief__sidebar">
-        <v-tabs vertical>
-      <v-tab>
-        <v-icon left>
-          mdi-account
-        </v-icon>
-        行政区划
-      </v-tab>
-      <v-tab>
-        <v-icon left>
-          mdi-lock
-        </v-icon>
-        流域
-      </v-tab>
-      <v-tab-item>
-            <w-tree></w-tree>
-      </v-tab-item>
+    <aside class="chief__sidebar white">
+      <v-tabs vertical>
+        <v-tab>
+          行政区划
+        </v-tab>
+        <v-tab>
+          流域
+        </v-tab>
+        <v-tab-item>
+          <w-tree :tree-data="region_data"></w-tree>
+        </v-tab-item>
+        <v-tab-item>
+          <w-tree :tree-data="river_data"></w-tree>
+        </v-tab-item>
       </v-tabs>
       <v-tab-item> </v-tab-item>
       <v-tab-item> </v-tab-item>
-
     </aside>
     <main class="chief__mian">
       <w-table :table-data="table_data" :headers="header_fileds"></w-table>
@@ -28,7 +24,7 @@
   </div>
 </template>
 <script>
-import chief_data from "./data";
+import chiefData from "./data";
 import WTable from "../../components/wTable";
 import WTree from "../../components/wTree";
 const header_fileds = [
@@ -57,22 +53,29 @@ export default {
   data() {
     return {
       table_data: [],
-      tree_data: chief_data.region,
-      header_fileds
+      header_fileds,
+      region_data: chiefData.region,
+      river_data: chiefData.river
     };
   },
   components: {
     WTable,
     WTree
+  },
+  mounted() {
+    console.log(chiefData);
   }
 };
 </script>
 <style>
 .chief {
   display: flex;
+  height: 100%;
 }
 .chief__sidebar {
   margin-right: 1.5em;
+  height: 100%;
+  overflow: auto;
 }
 .chief__mian {
   flex: 1;

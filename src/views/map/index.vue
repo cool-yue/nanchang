@@ -30,9 +30,9 @@ export default {
 </script>
 <style>
 .map {
-    height: 100%;
+  height: 100%;
 }
 .map__content {
-    height: 100%;
+  height: 100%;
 }
 </style>

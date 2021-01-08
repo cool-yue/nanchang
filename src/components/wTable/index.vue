@@ -14,6 +14,7 @@
       :items="tableData"
       :search="search"
     ></v-data-table>
+  </div>
   </v-card>
 </template>
 <script>
