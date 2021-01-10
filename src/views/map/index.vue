@@ -1,121 +1,149 @@
 <template>
   <div class="map">
     <div id="map__content" class="map__content"></div>
-    <div class="map__toolbar">
-      <button @click="toKunming">to kunmimg</button>
-    </div>
+    <div id="info">&nbsp;</div>
+    <div class="map__toolbar"><button @click="targetKunming">kunming</button></div>
   </div>
 </template>
 <script>
-import Map from "ol/Map";
-import { OSM, Vector as VectorSource } from "ol/source";
-import GeoJSON from "ol/format/GeoJSON";
-import { Vector as VectorLayer } from "ol/layer";
-import TileLayer from "ol/layer/Tile";
-import XYZ from "ol/source/XYZ";
-import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style';
-import { view, getKunmingGeoJson } from "./kunming.data.js";
-
-const image = new CircleStyle({
-  radius: 5,
-  fill: null,
-  stroke: new Stroke({color: 'red', width: 1}),
-});
+import 'ol/ol.css';
+import GeoJSON from 'ol/format/GeoJSON';
+import Map from 'ol/Map';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import TileLayer from 'ol/layer/Tile'
+import View from 'ol/View';
+import {Fill, Stroke, Style, Text} from 'ol/style';
+import OSM from 'ol/source/OSM';
 
 
-const styleFunction = function (feature) {
-  return styles[feature.getGeometry().getType()];
-};
-
-const styles = {
-  'Point': new Style({
-    image: image,
+var style = new Style({
+  fill: new Fill({
+    color: "rgba(0, 0, 0, 0.4)",
   }),
-  'LineString': new Style({
-    stroke: new Stroke({
-      color: 'green',
-      width: 1,
-    }),
+  stroke: new Stroke({
+    color: "#319FD3",
+    width: 3,
   }),
-  'MultiLineString': new Style({
-    stroke: new Stroke({
-      color: 'green',
-      width: 1,
-    }),
-  }),
-  'MultiPoint': new Style({
-    image: image,
-  }),
-  'MultiPolygon': new Style({
-    stroke: new Stroke({
-      color: 'yellow',
-      width: 1,
-    }),
+  text: new Text({
+    font: "14px Calibri,sans-serif",
     fill: new Fill({
-      color: 'rgba(255, 255, 0, 0.1)',
+      color: "#000",
     }),
-  }),
-  'Polygon': new Style({
     stroke: new Stroke({
-      color: 'blue',
-      lineDash: [4],
+      color: "#fff",
       width: 3,
     }),
-    fill: new Fill({
-      color: 'rgba(0, 0, 255, 0.1)',
-    }),
   }),
-  'GeometryCollection': new Style({
+});
+
+var highlightStyle = new Style({
+  stroke: new Stroke({
+    color: "#f00",
+    width: 1,
+  }),
+  fill: new Fill({
+    color: "rgba(255,0,0,0.1)",
+  }),
+  text: new Text({
+    font: "14px Calibri,sans-serif",
+    fill: new Fill({
+      color: "#000",
+    }),
     stroke: new Stroke({
-      color: 'magenta',
-      width: 2,
-    }),
-    fill: new Fill({
-      color: 'magenta',
-    }),
-    image: new CircleStyle({
-      radius: 10,
-      fill: null,
-      stroke: new Stroke({
-        color: 'magenta',
-      }),
+      color: "#f00",
+      width: 3,
     }),
   }),
-  'Circle': new Style({
-    stroke: new Stroke({
-      color: 'red',
-      width: 2,
-    }),
-    fill: new Fill({
-      color: 'rgba(255,0,0,0.2)',
-    }),
-  }),
-};
-
-
-
+});
+const source = new VectorSource({
+          url: "/source/kunming.geojson",
+          format: new GeoJSON(),
+});
+const view = new View({
+          center: [0, 0],
+          zoom: 1,
+});
 
 export default {
   methods: {
+    targetKunming() {
+         var feature = source.getFeatures()[0];
+         var polygon = feature.getGeometry();
+         view.fit(polygon, {padding: [400, 30, 30, 50]});
+         view.animate({zoom: view.getZoom() - 1 });
+    },
     toKunming() {
-      getKunmingGeoJson().then((source) => {
-          const vectorLayer = new VectorLayer({
-            source,
-            style: styleFunction,
-          });
-          console.log(vectorLayer);
-          this.renderMap(vectorLayer);
+      var vectorLayer = new VectorLayer({
+        source,
+        style: function (feature) {
+          style.getText().setText(feature.get("name"));
+          return style;
+        },
       });
+      console.log(vectorLayer);
+      var map = new Map({
+        layers: [
+          new TileLayer({
+           source: new OSM(),
+         }),
+        
+        vectorLayer],
+        target: "map__content",
+        view,
+      });
+
+      var featureOverlay = new VectorLayer({
+        source: new VectorSource(),
+        map: map,
+        style: function (feature) {
+          highlightStyle.getText().setText(feature.get("name"));
+          return highlightStyle;
+        },
+      });
+
+      var highlight;
+      var displayFeatureInfo = function (pixel) {
+        var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+          return feature;
+        });
+
+        var info = document.getElementById("info");
+        if (feature) {
+          info.innerHTML = feature.getId() + ": " + feature.get("name");
+        } else {
+          info.innerHTML = "&nbsp;";
+        }
+
+        if (feature !== highlight) {
+          if (highlight) {
+            featureOverlay.getSource().removeFeature(highlight);
+          }
+          if (feature) {
+            featureOverlay.getSource().addFeature(feature);
+          }
+          highlight = feature;
+        }
+      };
+
+      map.on("pointermove", function (evt) {
+        if (evt.dragging) {
+          return;
+        }
+        var pixel = map.getEventPixel(evt.originalEvent);
+        displayFeatureInfo(pixel);
+      });
+
+      map.on("click", function (evt) {
+        displayFeatureInfo(evt.pixel);
+      });
+      setTimeout(this.targetKunming, 1000);
     },
     renderMap(vectorLayer) {
+      console.log("vectorLayer", vectorLayer);
       new Map({
         target: "map__content",
-        layers: [
-          // new TileLayer({
-          //   source: new OSM(),
-          // }),
-          vectorLayer
-        ],
+        layers: [vectorLayer],
         view,
       });
     },

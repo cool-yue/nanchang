@@ -16,17 +16,24 @@ import View from "ol/View";
 
 
 
-function initVector(geojsonObject) {
-    const vectorSource = new VectorSource({
-        features: new GeoJSON().readFeatures(geojsonObject),
-    });
-    console.log(vectorSource);
-    console.log(vectorSource.getFeatures());
-    return vectorSource;
-}
+// var vectorLayer = new VectorLayer({
+//     source: new VectorSource({
+//       url: '/source/kunming.json',
+//       format: new GeoJSON(),
+//     }),
+//     style: function (feature) {
+//       style.getText().setText(feature.get('name'));
+//       return style;
+//     },
+// });
+
 
 export function getKunmingGeoJson() {
-    return fetch("/source/kunming.json").then(res => res.json()).then(res => initVector(res)).catch(console.error);
+    return fetch("/source/kunming.json")
+          .then(res => res.json())
+          .then(() => geojsonObject)
+          .then(res => initVector(res))
+          .catch(console.error);
 }
 
 
@@ -36,6 +43,6 @@ export function getKunmingGeoJson() {
 
 export const view = new View({
     center: [0, 0],
-    zoom: 1
+    zoom: 5
 });
   
