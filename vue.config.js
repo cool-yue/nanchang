@@ -3,11 +3,11 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV !== "production",
   devServer: {
     proxy: {
-      '/source': {
-        target: 'http://localhost:3000',
+      "/source": {
+        target: "http://localhost:3000",
         ws: true,
         changeOrigin: true,
-        pathRewrite: {'^/source' : ''}
+        pathRewrite: { "^/source": "" }
       }
     }
   }

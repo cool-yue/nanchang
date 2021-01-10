@@ -40,9 +40,9 @@
       </v-footer>
     </v-app>
     <v-app v-else>
-        <v-main>
-            <login  @login-success="hanlde_success_login" />
-        </v-main>
+      <v-main>
+        <login @login-success="hanlde_success_login" />
+      </v-main>
     </v-app>
   </div>
 </template>
@@ -111,7 +111,7 @@ export default {
     },
     hanlde_success_login() {
       this.is_login = true;
-      sessionStorage = sessionStorage.setItem("is_login", true)
+      sessionStorage.setItem("is_login", true);
     }
   }
 };

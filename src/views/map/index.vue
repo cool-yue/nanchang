@@ -2,109 +2,111 @@
   <div class="map">
     <div id="map__content" class="map__content"></div>
     <div id="info">&nbsp;</div>
-    <div class="map__toolbar"><button @click="targetKunming">kunming</button></div>
+    <div class="map__toolbar">
+      <button @click="targetKunming">kunming</button>
+    </div>
   </div>
 </template>
 <script>
-import 'ol/ol.css';
-import GeoJSON from 'ol/format/GeoJSON';
-import Map from 'ol/Map';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import TileLayer from 'ol/layer/Tile'
-import View from 'ol/View';
-import {Fill, Stroke, Style, Text} from 'ol/style';
-import OSM from 'ol/source/OSM';
-
+import "ol/ol.css";
+import GeoJSON from "ol/format/GeoJSON";
+import Map from "ol/Map";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import TileLayer from "ol/layer/Tile";
+import View from "ol/View";
+import { Fill, Stroke, Style, Text } from "ol/style";
+import OSM from "ol/source/OSM";
 
 var style = new Style({
   fill: new Fill({
-    color: "rgba(0, 0, 0, 0.4)",
+    color: "rgba(0, 0, 0, 0.4)"
   }),
   stroke: new Stroke({
     color: "#319FD3",
-    width: 3,
+    width: 3
   }),
   text: new Text({
     font: "14px Calibri,sans-serif",
     fill: new Fill({
-      color: "#000",
+      color: "#000"
     }),
     stroke: new Stroke({
       color: "#fff",
-      width: 3,
-    }),
-  }),
+      width: 3
+    })
+  })
 });
 
 var highlightStyle = new Style({
   stroke: new Stroke({
     color: "#f00",
-    width: 1,
+    width: 1
   }),
   fill: new Fill({
-    color: "rgba(255,0,0,0.1)",
+    color: "rgba(255,0,0,0.1)"
   }),
   text: new Text({
     font: "14px Calibri,sans-serif",
     fill: new Fill({
-      color: "#000",
+      color: "#000"
     }),
     stroke: new Stroke({
       color: "#f00",
-      width: 3,
-    }),
-  }),
+      width: 3
+    })
+  })
 });
 const source = new VectorSource({
-          url: "/source/kunming.geojson",
-          format: new GeoJSON(),
+  url: "/source/kunming.geojson",
+  format: new GeoJSON()
 });
 const view = new View({
-          center: [0, 0],
-          zoom: 1,
+  center: [0, 0],
+  zoom: 1
 });
 
 export default {
   methods: {
     targetKunming() {
-         var feature = source.getFeatures()[0];
-         var polygon = feature.getGeometry();
-         view.fit(polygon, {padding: [400, 30, 30, 50]});
-         view.animate({zoom: view.getZoom() - 1 });
+      var feature = source.getFeatures()[0];
+      var polygon = feature.getGeometry();
+      view.fit(polygon, { padding: [400, 30, 30, 50] });
+      view.animate({ zoom: view.getZoom() - 1 });
     },
     toKunming() {
       var vectorLayer = new VectorLayer({
         source,
-        style: function (feature) {
+        style: function(feature) {
           style.getText().setText(feature.get("name"));
           return style;
-        },
+        }
       });
       console.log(vectorLayer);
       var map = new Map({
         layers: [
           new TileLayer({
-           source: new OSM(),
-         }),
-        
-        vectorLayer],
+            source: new OSM()
+          }),
+
+          vectorLayer
+        ],
         target: "map__content",
-        view,
+        view
       });
 
       var featureOverlay = new VectorLayer({
         source: new VectorSource(),
         map: map,
-        style: function (feature) {
+        style: function(feature) {
           highlightStyle.getText().setText(feature.get("name"));
           return highlightStyle;
-        },
+        }
       });
 
       var highlight;
-      var displayFeatureInfo = function (pixel) {
-        var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+      var displayFeatureInfo = function(pixel) {
+        var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
           return feature;
         });
 
@@ -126,7 +128,7 @@ export default {
         }
       };
 
-      map.on("pointermove", function (evt) {
+      map.on("pointermove", function(evt) {
         if (evt.dragging) {
           return;
         }
@@ -134,7 +136,7 @@ export default {
         displayFeatureInfo(pixel);
       });
 
-      map.on("click", function (evt) {
+      map.on("click", function(evt) {
         displayFeatureInfo(evt.pixel);
       });
       setTimeout(this.targetKunming, 1000);
@@ -144,13 +146,13 @@ export default {
       new Map({
         target: "map__content",
         layers: [vectorLayer],
-        view,
+        view
       });
-    },
+    }
   },
   mounted() {
     this.toKunming();
-  },
+  }
 };
 </script>
 <style>
