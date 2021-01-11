@@ -1,5 +1,6 @@
 import region from "./region.js";
 import river from "./river.js";
+import chief from "./chief.js";
 
 console.log(region);
 console.log(river);
@@ -65,5 +66,6 @@ console.log("123", transRiverToTree(river));
 
 export default {
   region: transferRegionToTree(region),
-  river: transRiverToTree(river)
+  river: transRiverToTree(river),
+  chief
 };

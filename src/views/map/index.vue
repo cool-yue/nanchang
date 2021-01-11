@@ -2,9 +2,11 @@
   <div class="map">
     <div id="map__content" class="map__content"></div>
     <div id="info">&nbsp;</div>
+    <!--
     <div class="map__toolbar">
       <button @click="targetKunming">kunming</button>
     </div>
+    -->
   </div>
 </template>
 <script>
@@ -72,7 +74,7 @@ export default {
       var feature = source.getFeatures()[0];
       var polygon = feature.getGeometry();
       view.fit(polygon, { padding: [400, 30, 30, 50] });
-      view.animate({ zoom: view.getZoom() - 1 });
+      // view.animate({ zoom: view.getZoom() - 1 });
     },
     toKunming() {
       var vectorLayer = new VectorLayer({
@@ -106,13 +108,14 @@ export default {
 
       var highlight;
       var displayFeatureInfo = function(pixel) {
+        console.log("pixel是什么", pixel);
         var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
           return feature;
         });
 
         var info = document.getElementById("info");
         if (feature) {
-          info.innerHTML = feature.getId() + ": " + feature.get("name");
+          info.innerHTML = feature.get("name");
         } else {
           info.innerHTML = "&nbsp;";
         }
@@ -160,6 +163,12 @@ export default {
   height: 100%;
   position: relative;
 }
+#info {
+  position: absolute;
+  left: 1em;
+  top: 6em;
+}
+
 .map__content {
   height: 100%;
 }

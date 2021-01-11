@@ -52,7 +52,7 @@ const header_fileds = [
 export default {
   data() {
     return {
-      table_data: [],
+      table_data: chiefData.chief,
       header_fileds,
       region_data: chiefData.region,
       river_data: chiefData.river
