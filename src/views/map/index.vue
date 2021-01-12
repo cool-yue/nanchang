@@ -1,23 +1,20 @@
 <template>
   <div class="map">
-    <div id="map__content" class="map__content"></div>
+    <div id="map__content" class="map__content"><div id="popup"></div></div>
     <div id="info">&nbsp;</div>
     <div class="map__board">
         <div class="map__rain">
             <div class="map__title">
               <img src="../../assets/雨量站.svg" class="map__img" />
               <span>雨量站</span>
-              <span class="map__total">13</span>
+              <span class="map__total">6</span>
            </div>
             <div class="map__list">
                 <div class="map__item">
-                    <span class="map__normal">数据正常:</span><strong>10</strong>
+                    <span class="map__normal">数据正常:</span><strong>04</strong>
                 </div>
                 <div class="map__item">
-                    <span class="map__fatal">数据异常:</span><strong>02</strong>
-                </div>
-                <div class="map__item">
-                    <span class="map__broken">设备损坏:</span><strong>01</strong>
+                    <span class="map__broken">数据异常:</span><strong>02</strong>
                 </div>
             </div>
         </div>
@@ -25,17 +22,14 @@
         <div class="map__title">
                <img src="../../assets/水位站.svg" class="map__img" />
                <span>水位站</span>
-               <span class="map__total">15</span>
+               <span class="map__total">5</span>
         </div>
                            <div class="map__list">
                 <div class="map__item">
-                    <span class="map__normal">数据正常:</span><strong>10</strong>
+                    <span class="map__normal">数据正常:</span><strong>02</strong>
                 </div>
                 <div class="map__item">
-                    <span class="map__fatal">数据异常:</span><strong>03</strong>
-                </div>
-                <div class="map__item">
-                    <span class="map__broken">设备损坏:</span><strong>02</strong>
+                    <span class="map__broken">数据异常:</span><strong>02</strong>
                 </div>
             </div>
         </div>
@@ -43,17 +37,14 @@
         <div class="map__title">
               <img src="../../assets/摄像头.svg" class="map__img" />
               <span>视频站</span>
-              <span class="map__total">22</span>
+              <span class="map__total">3</span>
         </div>
                            <div class="map__list">
                 <div class="map__item">
-                    <span class="map__normal">数据正常:</span><strong>10</strong>
+                    <span class="map__normal">数据正常:</span><strong>02</strong>
                 </div>
                 <div class="map__item">
-                    <span class="map__fatal">数据异常:</span><strong>10</strong>
-                </div>
-                <div class="map__item">
-                    <span class="map__broken">设备损坏:</span><strong>02</strong>
+                    <span class="map__broken">数据异常:</span><strong>01</strong>
                 </div>
             </div>
 
@@ -61,56 +52,14 @@
     </div>
     <div class="map__search">
       <v-row>
-        <v-col cols="11" md="3">
-          <v-text-field v-model="name" label="河长姓名"></v-text-field>
-        </v-col>
-
-        <v-col cols="11" md="3">
-          <v-text-field v-model="river_name" label="河流名称"></v-text-field>
-        </v-col>
-        <v-col cols="11" sm="3">
-          <v-menu
-            ref="menu"
-            v-model="menu"
-            :close-on-content-click="false"
-            :return-value.sync="date"
-            transition="scale-transition"
-            offset-y
-            max-width="290px"
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="date"
-                label="巡河日期"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker v-model="date" locale="zh-cn" no-title scrollable>
-              <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="menu = false">
-                取消
-              </v-btn>
-              <v-btn text color="primary" @click="$refs.menu.save(date)">
-                确认
-              </v-btn>
-            </v-date-picker>
-          </v-menu>
+        <v-col cols="11" md="9">
+          <v-text-field v-model="search_value" label="输入关键字"></v-text-field>
         </v-col>
         <v-col cols="11" md="3">
-          <v-btn class="mt-3 mr-6" color="primary">搜索</v-btn>
-          <v-btn class="mt-3">重置</v-btn>
+          <v-btn class="mt-3 mr-6">搜索</v-btn>
         </v-col>
       </v-row>
     </div>
-    <!--
-    <div class="map__toolbar">
-      <button @click="targetKunming">kunming</button>
-    </div>
-    -->
   </div>
 </template>
 <script>
@@ -127,10 +76,12 @@ import View from "ol/View";
 import { Fill, Stroke, Style, Text, Icon } from "ol/style";
 import OSM from "ol/source/OSM";
 import TileJSON from "ol/source/TileJSON";
+import iconGen from "./utils.icon.js";
+import Overlay from 'ol/Overlay';
 
 var style = new Style({
   fill: new Fill({
-    color: "rgba(0, 0, 0, 0.4)"
+    color: "rgba(0, 0, 0, 0.8)"
   }),
   stroke: new Stroke({
     color: "#319FD3",
@@ -190,6 +141,11 @@ const pathLayer = new VectorLayer({
 });
 
 export default {
+  data() {
+    return {
+      search_value: ""
+    };
+  },
   methods: {
     targetKunming() {
       const feature = source.getFeatures()[0];
@@ -210,10 +166,8 @@ export default {
           new TileLayer({
             source: new OSM()
           }),
-          //rasterLayer,
-          //pathLayer
           vectorLayer,
-          this.renderRainIcon(),
+          this.renderIconLayer(),
         ],
         target: "map__content",
         view
@@ -228,40 +182,63 @@ export default {
         }
       });
 
-      var highlight;
-      var displayFeatureInfo = function(pixel) {
-        var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
-          return feature;
-        });
+      // var highlight;
+      // var displayFeatureInfo = function(pixel) {
+      //   var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+      //     return feature;
+      //   });
 
-        var info = document.getElementById("info");
-        if (feature) {
-          info.innerHTML = feature.get("name");
-        } else {
-          info.innerHTML = "&nbsp;";
-        }
+      //   var info = document.getElementById("info");
+      //   if (feature) {
+      //     info.innerHTML = feature.get("name");
+      //   } else {
+      //     info.innerHTML = "&nbsp;";
+      //   }
 
-        if (feature !== highlight) {
-          if (highlight) {
-            featureOverlay.getSource().removeFeature(highlight);
-          }
-          if (feature) {
-            featureOverlay.getSource().addFeature(feature);
-          }
-          highlight = feature;
-        }
-      };
+      //   if (feature !== highlight) {
+      //     if (highlight) {
+      //       featureOverlay.getSource().removeFeature(highlight);
+      //     }
+      //     if (feature) {
+      //       featureOverlay.getSource().addFeature(feature);
+      //     }
+      //     highlight = feature;
+      //   }
+      // };
 
-      map.on("pointermove", function(evt) {
-        if (evt.dragging) {
-          return;
-        }
-        var pixel = map.getEventPixel(evt.originalEvent);
-        displayFeatureInfo(pixel);
+      // map.on("pointermove", function(evt) {
+      //   if (evt.dragging) {
+      //     return;
+      //   }
+      //   var pixel = map.getEventPixel(evt.originalEvent);
+      //   displayFeatureInfo(pixel);
+      // });
+      var element = document.getElementById('popup');
+
+      var popup = new Overlay({
+        element: element,
+        positioning: 'bottom-center',
+        stopEvent: false,
+        offset: [0, -50],
       });
-
+      map.addOverlay(popup);
       map.on("click", function(evt) {
-
+        var feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+          return feature;
+         });
+         if (
+           feature
+           && feature.getGeometry() instanceof Point
+         ) {
+           let coordinates = feature.getGeometry().getCoordinates();
+           console.log(coordinates);
+           popup.setPosition(coordinates);
+           element.textContent = feature.get("name");
+           //element.style.display = "block";
+         } else {
+           console.log("关闭");
+           element.style.display = "none";
+         }
       });
       setTimeout(this.targetKunming, 1000);
       //setTimeout(this.targetIcon, 3000);
@@ -269,37 +246,60 @@ export default {
     targetIcon() {
       view.fit(new Point([102.704412, 25.042165]));
     },
-    renderRainIcon() {
-      const iconFeature = new Feature({
-        geometry: new Point([102.56428241729736, 24.99189272112795]),
-        name: "雨量站",
-        // population: 4000,
-        // rainfall: 500
-      });
-      const iconFeature1 = new Feature({
-        geometry: new Point([ 102.63908386230469, 24.989014303757518]),
-        name: "摄像头",
-        // population: 4000,
-        // rainfall: 500
-      });
-      console.log("iconFeature.getGeometry()", iconFeature.getGeometry());
-      const iconStyle = new Style({
-        image: new Icon({
-          src: "/source/雨量站.svg",
-        })
-      });
-      const iconStyle1 = new Style({
-        image: new Icon({
-          anchor: [0.5, 46],
-          anchorXUnits: "fraction",
-          anchorYUnits: "pixels",
-          src: "/source/摄像头.svg",
-        })
-      });
-      iconFeature1.setStyle(iconStyle1);
-      iconFeature.setStyle(iconStyle);
+    genWaterIcon(coordinates, isValid = true) {
+        return iconGen.waterIconFeature(coordinates, isValid);
+    },
+    genVideoIcon(coordinates, isValid = true) {
+        return iconGen.videoIconFeature(coordinates, isValid);
+    },
+    genRainIcon(coordinates, isValid = true) {
+        return iconGen.rainIconFeature(coordinates, isValid);
+    },
+    addIconFeature(feature) {
+      iconSource.addFeature(feature)
+    },
+    renderIconLayer() {
+       const iconFeature1 = this.genRainIcon([102.56428241729736, 24.99189272112795]);
+       const iconFeature2 = this.genRainIcon([102.99751281738281, 24.8851907122672], false);
+      const iconFeature3 = this.genVideoIcon([103.001632690, 24.9141518]);
+       const iconFeature4 = this.genVideoIcon([102.63908386230469, 24.989014303757518], false);
+      const iconFeature5 = this.genWaterIcon([102.67684936523438, 24.79670834894575]);
+      const iconFeature6 = this.genWaterIcon( [102.7837085723877,25.047891742482044], false);
+      const iconFeature7 = this.genWaterIcon([102.75959014892577, 24.86338755462191], false);
+      const iconFeature8 = this.genWaterIcon([102.75959014892577, 24.86338755462191], false);
+
+      const iconFeature9 = this.genWaterIcon([102.92335510253905,  25.02432860086096]);
+      const iconFeature10 = this.genWaterIcon(        [
+          102.79254913330078,
+          25.153054042635898
+        ]);
+      const iconFeature11 = this.genRainIcon(        [
+          102.97245025634766,
+          25.151189424078172
+        ]);
+      const iconFeature12 = this.genVideoIcon(        [
+          102.8485107421875,
+          25.19655371675069
+        ]);
+       const iconFeature13 = this.genRainIcon(     [
+          102.40339279174805,
+          25.880229968183293
+        ]);
+       const iconFeature14 = this.genRainIcon(         [
+          102.42811203002928,
+          25.877295473108283
+        ]);
+       const iconFeature15 = this.genRainIcon([
+          102.46707916259766,
+          25.883318831596714
+        ], false);
       const iconSource = new VectorSource({
-        features: [iconFeature, iconFeature1]
+        features: [
+          iconFeature1, iconFeature2, iconFeature3, iconFeature4, 
+          iconFeature5, iconFeature6, iconFeature7, iconFeature8,
+          iconFeature9, iconFeature10, iconFeature11, iconFeature12,
+          iconFeature13, iconFeature14, iconFeature15
+        ]
       });
       const iconLayer = new VectorLayer({
         source: iconSource
@@ -340,10 +340,10 @@ export default {
   left: 1em;
   width: 15%;
   min-width: 250px;
-  height: 40%;
-  min-height: 340px;
+  height: 30%;
+  min-height: 300px;
   border-radius: 4px;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.8);
   color: #1296db;
 }
 .map__img {
@@ -376,9 +376,11 @@ export default {
   margin-left: auto;
 }
 .map__search {
+  padding:1em;
   position: absolute;
   background-color: white;
-  left: 2em;
-  top: 30em;
+  right: 1em;
+  top: 5em;
+  background-color: rgba(255, 255, 255, 0.8)
 }
 </style>
