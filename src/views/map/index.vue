@@ -2,6 +2,110 @@
   <div class="map">
     <div id="map__content" class="map__content"></div>
     <div id="info">&nbsp;</div>
+    <div class="map__board">
+        <div class="map__rain">
+            <div class="map__title">
+              <img src="../../assets/雨量站.svg" class="map__img" />
+              <span>雨量站</span>
+              <span class="map__total">13</span>
+           </div>
+            <div class="map__list">
+                <div class="map__item">
+                    <span class="map__normal">数据正常:</span><strong>10</strong>
+                </div>
+                <div class="map__item">
+                    <span class="map__fatal">数据异常:</span><strong>02</strong>
+                </div>
+                <div class="map__item">
+                    <span class="map__broken">设备损坏:</span><strong>01</strong>
+                </div>
+            </div>
+        </div>
+        <div class="map__water">
+        <div class="map__title">
+               <img src="../../assets/水位站.svg" class="map__img" />
+               <span>水位站</span>
+               <span class="map__total">15</span>
+        </div>
+                           <div class="map__list">
+                <div class="map__item">
+                    <span class="map__normal">数据正常:</span><strong>10</strong>
+                </div>
+                <div class="map__item">
+                    <span class="map__fatal">数据异常:</span><strong>03</strong>
+                </div>
+                <div class="map__item">
+                    <span class="map__broken">设备损坏:</span><strong>02</strong>
+                </div>
+            </div>
+        </div>
+        <div class="map__video">
+        <div class="map__title">
+              <img src="../../assets/摄像头.svg" class="map__img" />
+              <span>视频站</span>
+              <span class="map__total">22</span>
+        </div>
+                           <div class="map__list">
+                <div class="map__item">
+                    <span class="map__normal">数据正常:</span><strong>10</strong>
+                </div>
+                <div class="map__item">
+                    <span class="map__fatal">数据异常:</span><strong>10</strong>
+                </div>
+                <div class="map__item">
+                    <span class="map__broken">设备损坏:</span><strong>02</strong>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="map__search">
+      <v-row>
+        <v-col cols="11" md="3">
+          <v-text-field v-model="name" label="河长姓名"></v-text-field>
+        </v-col>
+
+        <v-col cols="11" md="3">
+          <v-text-field v-model="river_name" label="河流名称"></v-text-field>
+        </v-col>
+        <v-col cols="11" sm="3">
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :return-value.sync="date"
+            transition="scale-transition"
+            offset-y
+            max-width="290px"
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="date"
+                label="巡河日期"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="date" locale="zh-cn" no-title scrollable>
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="menu = false">
+                取消
+              </v-btn>
+              <v-btn text color="primary" @click="$refs.menu.save(date)">
+                确认
+              </v-btn>
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="11" md="3">
+          <v-btn class="mt-3 mr-6" color="primary">搜索</v-btn>
+          <v-btn class="mt-3">重置</v-btn>
+        </v-col>
+      </v-row>
+    </div>
     <!--
     <div class="map__toolbar">
       <button @click="targetKunming">kunming</button>
@@ -12,13 +116,17 @@
 <script>
 import "ol/ol.css";
 import GeoJSON from "ol/format/GeoJSON";
+import Feature from "ol/Feature";
 import Map from "ol/Map";
+import Point from "ol/geom/Point";
+import MultiPoint from "ol/geom/MultiPoint";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import TileLayer from "ol/layer/Tile";
 import View from "ol/View";
-import { Fill, Stroke, Style, Text } from "ol/style";
+import { Fill, Stroke, Style, Text, Icon } from "ol/style";
 import OSM from "ol/source/OSM";
+import TileJSON from "ol/source/TileJSON";
 
 var style = new Style({
   fill: new Fill({
@@ -65,15 +173,28 @@ const source = new VectorSource({
 });
 const view = new View({
   center: [0, 0],
-  zoom: 1
+  zoom: 3,
+  projection: 'EPSG:4326'
+});
+
+const pathSource = new VectorSource({
+  url: "/source/path.geojson",
+  format: new GeoJSON()
+});
+
+const pathLayer = new VectorLayer({
+  source: pathSource,
+  style: function(feature) {
+    return style;
+  }
 });
 
 export default {
   methods: {
     targetKunming() {
-      var feature = source.getFeatures()[0];
-      var polygon = feature.getGeometry();
-      view.fit(polygon, { padding: [400, 30, 30, 50] });
+      const feature = source.getFeatures()[0];
+      const polygon = feature && feature.getGeometry();
+      polygon && view.fit(polygon, { padding: [400, 30, 30, 50] });
       // view.animate({ zoom: view.getZoom() - 1 });
     },
     toKunming() {
@@ -84,14 +205,15 @@ export default {
           return style;
         }
       });
-      console.log(vectorLayer);
       var map = new Map({
         layers: [
           new TileLayer({
             source: new OSM()
           }),
-
-          vectorLayer
+          //rasterLayer,
+          //pathLayer
+          vectorLayer,
+          this.renderRainIcon(),
         ],
         target: "map__content",
         view
@@ -108,7 +230,6 @@ export default {
 
       var highlight;
       var displayFeatureInfo = function(pixel) {
-        console.log("pixel是什么", pixel);
         var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
           return feature;
         });
@@ -140,17 +261,50 @@ export default {
       });
 
       map.on("click", function(evt) {
-        displayFeatureInfo(evt.pixel);
+
       });
       setTimeout(this.targetKunming, 1000);
+      //setTimeout(this.targetIcon, 3000);
     },
-    renderMap(vectorLayer) {
-      console.log("vectorLayer", vectorLayer);
-      new Map({
-        target: "map__content",
-        layers: [vectorLayer],
-        view
+    targetIcon() {
+      view.fit(new Point([102.704412, 25.042165]));
+    },
+    renderRainIcon() {
+      const iconFeature = new Feature({
+        geometry: new Point([102.56428241729736, 24.99189272112795]),
+        name: "雨量站",
+        // population: 4000,
+        // rainfall: 500
       });
+      const iconFeature1 = new Feature({
+        geometry: new Point([ 102.63908386230469, 24.989014303757518]),
+        name: "摄像头",
+        // population: 4000,
+        // rainfall: 500
+      });
+      console.log("iconFeature.getGeometry()", iconFeature.getGeometry());
+      const iconStyle = new Style({
+        image: new Icon({
+          src: "/source/雨量站.svg",
+        })
+      });
+      const iconStyle1 = new Style({
+        image: new Icon({
+          anchor: [0.5, 46],
+          anchorXUnits: "fraction",
+          anchorYUnits: "pixels",
+          src: "/source/摄像头.svg",
+        })
+      });
+      iconFeature1.setStyle(iconStyle1);
+      iconFeature.setStyle(iconStyle);
+      const iconSource = new VectorSource({
+        features: [iconFeature, iconFeature1]
+      });
+      const iconLayer = new VectorLayer({
+        source: iconSource
+      });
+      return iconLayer;
     }
   },
   mounted() {
@@ -165,7 +319,7 @@ export default {
 }
 #info {
   position: absolute;
-  left: 1em;
+  right: 1em;
   top: 6em;
 }
 
@@ -177,5 +331,54 @@ export default {
   left: 0;
   top: 4em;
   background-color: rgba(0, 0, 0, 0.4);
+}
+
+.map__board {
+  padding: 1em;
+  position: absolute;
+  top: 5em;
+  left: 1em;
+  width: 15%;
+  min-width: 250px;
+  height: 40%;
+  min-height: 340px;
+  border-radius: 4px;
+  background-color: white;
+  color: #1296db;
+}
+.map__img {
+  height: 2em;
+}
+.map__title {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+}
+.map__item {
+  text-align: right;
+}
+.map__list {
+  color: black;
+}
+.map__item * + * {
+  padding-left: 1em;
+}
+.map__normal {
+  color: #00BFA5;
+}
+.map__fatal {
+  color: #F44336;
+}
+.map__broken {
+  color: #FFA726;
+}
+.map__total {
+  margin-left: auto;
+}
+.map__search {
+  position: absolute;
+  background-color: white;
+  left: 2em;
+  top: 30em;
 }
 </style>
