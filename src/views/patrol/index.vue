@@ -58,25 +58,82 @@
           item-key="name"
           show-select
           class="elevation-1"
-          height="400"
+          height="300"
+          dense
+          @item-selected="handleSelect"
         >
-          <template v-slot:top> </template>
+        <template v-slot:item.effort="{ item }">
+           <v-chip
+              :color="getColor(item.effort)"
+              x-small
+              dark
+            >
+        {{ item.effort }}
+      </v-chip>
+    </template>
         </v-data-table>
       </div>
       <div class="partrol_tabs">
-        <template>
           <v-tabs>
             <v-tab>轨迹</v-tab>
             <v-tab>详细信息</v-tab>
             <v-tab>图片</v-tab>
-          </v-tabs>
-        </template>
+            <v-tab>上报事件</v-tab>
+            <v-tab-item>
+                   <div class="patrol_pathinfo">
+                         <div id="patrol__path"></div>
+                         <div class="patrol_info">
+                             <h3>轨迹信息</h3>
+                             <div class="partrol__information"><span>有效性:</span> <span>{{info.effort}}</span></div>
+                             <div class="partrol__information"><span>总长度:</span><span>{{info.total}}</span></div>
+                             <div class="partrol__information"><span>当前长度:</span><span>{{info.current}}</span></div>
+                             <div class="partrol__information"><span>占比:</span><span>{{info.percent}}</span></div>
+                             <div class="partrol__information">有效规则: 在有效区域内,巡河长度必须不少于总长度的百分之70</div>
+                         </div>
+                   </div>
+            </v-tab-item>
+        <v-tab-item>
+              <div>详细信息</div>
+        </v-tab-item>
+        <v-tab-item>
+              <div>图片</div>
+        </v-tab-item>
+         <v-tab-item>
+              <div>无</div>
+        </v-tab-item>
+        </v-tabs>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import View from "ol/View";
+import Map from "ol/Map";
+import OSM from "ol/source/OSM";
+import TileLayer from "ol/layer/Tile";
+import pathData from "./path.data.js";
+import pathFeature from "./partrolPath.js";
+
+
+const polygon_feature = pathFeature.polygonFeature(pathData.polygonPath);
+const pathSource = new VectorSource({
+  features: [polygon_feature]
+});
+const pathLayer = new VectorLayer({
+  source: pathSource
+});
+const view = new View({
+    center: [102.89237022399902,
+          24.890524113297225
+],
+    zoom: 14,
+    projection: 'EPSG:4326'
+});
+
+
 export default {
   data: () => ({
     valid: false,
@@ -87,6 +144,12 @@ export default {
     modal: false,
     singleSelect: true,
     selected: [],
+    info: {
+      effort: "有效",
+      total: "3.1km",
+      current: "2.85km",
+      percent: "91.9%"
+    },
     headers: [
       {
         text: "巡河人",
@@ -107,38 +170,125 @@ export default {
     desserts: [
       {
         name: "河长1",
-        river_segment: "大清河",
+        river_segment: "松茂水库",
         region: "寻甸回族彝族自治县",
         event_number: 1,
         start_time: "2021-01-10 11:00:32",
         end_time: "2021-01-10 11:10:32",
-        river_segment_distance: "5km",
-        patrol_distance: "4km",
+        river_segment_distance: "3.1km",
+        patrol_distance: "2.85km",
         intervel: "10",
         effort: "有效"
       },
       {
         name: "河长2",
-        river_segment: "大清河",
+        river_segment: "松茂水库",
         region: "寻甸回族彝族自治县",
         event_number: 1,
         start_time: "2021-01-10 11:00:32",
         end_time: "2021-01-10 11:10:32",
-        river_segment_distance: "5km",
-        patrol_distance: "4km",
+        river_segment_distance: "3.1km",
+        patrol_distance: "1.92km",
         intervel: "10",
-        effort: "有效"
+        effort: "无效"
       }
     ]
-  })
+  }),
+  methods: {
+    getColor(effort) {
+      if (effort === "有效") {
+        return "green";
+      } else if(effort === "无效") {
+        return "red"
+      }
+    },
+    renderMap() {
+       new Map({
+        layers: [
+          new TileLayer({
+            source: new OSM()
+          }),
+          pathLayer
+        ],
+        target: "patrol__path",
+        view
+      });
+    },
+    handleSelect(item) {
+        if (item.value) {
+             if (item.item.effort === "无效") {
+                let badPathFeature = pathFeature.badPathFeature(pathData.badPath);
+                 this.addPath(badPathFeature, this.okToBad);
+             } else {
+                let goodPathFeature = pathFeature.goodPathFeature(pathData.goodPath);
+                 this.addPath(goodPathFeature, this.badToOk);
+             }
+        }
+    },
+    addPath(pathFeature, changeInfo) {
+      let features = pathSource.getFeatures();
+      if (features.length > 1) {
+        features.slice(1).forEach(feature => {
+          pathSource.removeFeature(feature);
+        })
+      }
+      changeInfo && changeInfo();
+      pathSource.addFeature(pathFeature);
+    },
+    okToBad() {
+      this.info.effort = "无效";
+      this.info.percent = "61.9%";
+      this.info.current = "1.92km";
+    },
+    badToOk() {
+      this.info.effort = "有效";
+      this.info.percent = "91.9%";
+      this.info.current = "2.85km";
+    }
+  },
+  mounted() {
+      setTimeout(this.renderMap, 2000);
+  }
 };
 </script>
 
 <style>
+.patrol {
+  height: 100%;
+}
 .patrol_records {
-  height: 450px;
+  height: 350px;
 }
 .partrol_tabs {
   margin-top: 1em;
+  height: 30%;
+}
+.patrol_pathinfo {
+  display: flex;
+}
+#patrol__path {
+  height: 350px;
+  width: 60%;
+  min-width: 500px;
+  margin-right: 1em;
+}
+.patrol_info {
+  height: 350px;
+}
+
+.patrol_info > h3 {
+  text-align:center;
+}
+.partrol__information {
+    color: black;
+}
+
+
+.partrol__information > span + span {
+  font-weight: bold;
+}
+.partrol__information:last-child {
+  margin-top: 10em;
+  color: #4CAF50;
 }
 </style>

@@ -4,7 +4,7 @@
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
-        label="输入关键字"
+        label="输入关键字综合查询"
         single-line
         hide-details
       ></v-text-field>
@@ -145,7 +145,7 @@ export default {
     search: "",
     dialog: false,
     dialogDelete: false,
-    headers: [
+    headers1: [
       {
         text: "姓名",
         align: "start",
@@ -183,7 +183,20 @@ export default {
       distance: 0
     }
   }),
-
+  props: {
+    tableHeader: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
+    tableData: {
+        type: Array,
+        default: () => {
+          return [];
+        }
+    }
+  },
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "添加" : "编辑";
@@ -196,11 +209,25 @@ export default {
     },
     dialogDelete(val) {
       val || this.closeDelete();
+    },
+    tableData: {
+      handler(newValue, oldValue) {
+        this.desserts = newValue;
+        console.log("tabledata");
+      },
+      immediate: true
+    },
+    tableHeader: {
+      handler(newValue, oldValue) {
+        this.headers = newValue;
+        console.log("header");
+      },
+      immediate: true
     }
   },
 
   created() {
-    this.initialize();
+    // this.initialize();
   },
 
   methods: {

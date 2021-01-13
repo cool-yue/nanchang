@@ -63,7 +63,6 @@
   </div>
 </template>
 <script>
-import "ol/ol.css";
 import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
 import Map from "ol/Map";
@@ -124,7 +123,7 @@ const source = new VectorSource({
 });
 const view = new View({
   center: [0, 0],
-  zoom: 3,
+  zoom: 2,
   projection: 'EPSG:4326'
 });
 
@@ -172,7 +171,7 @@ export default {
         target: "map__content",
         view
       });
-
+      console.log("map在哪", map);
       var featureOverlay = new VectorLayer({
         source: new VectorSource(),
         map: map,
@@ -244,7 +243,7 @@ export default {
       //setTimeout(this.targetIcon, 3000);
     },
     targetIcon() {
-      view.fit(new Point([102.704412, 25.042165]));
+      view.fit(new Point([102.704412, 25.282165]));
     },
     genWaterIcon(coordinates, isValid = true) {
         return iconGen.waterIconFeature(coordinates, isValid);
@@ -295,7 +294,7 @@ export default {
         ], false);
       const iconSource = new VectorSource({
         features: [
-          iconFeature1, iconFeature2, iconFeature3, iconFeature4, 
+          iconFeature1, iconFeature2, iconFeature3, iconFeature4,
           iconFeature5, iconFeature6, iconFeature7, iconFeature8,
           iconFeature9, iconFeature10, iconFeature11, iconFeature12,
           iconFeature13, iconFeature14, iconFeature15

@@ -7,6 +7,7 @@
         :items="desserts"
         sort-by="calories"
         class="elevation-1"
+        dense
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -112,12 +113,34 @@
         </template>
       </v-data-table>
     </div>
-    <div class="building__chart"></div>
+    <div class="building__chart">
+        <div class="building__options">
+            <v-row>
+                <v-col md="3">
+                    <v-select
+                      :items="['年份', '施工单位', '施工部位', '施工类型']"
+                      label="选择指标"
+                      dense
+                      solo
+                    ></v-select>
+                </v-col>
+            </v-row>
+        </div>
+        <div class="building__chartlist">
+             <div class="building_apex"
+              v-for="(item, i) in charts"
+              :key="i"
+             ></div>
+        </div>
+    </div>
   </div>
 </template>
 <script>
+import projectData from "./data.building.js";
+console.log(projectData);
 export default {
   data: () => ({
+    charts:[{},{},{}],
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -127,14 +150,16 @@ export default {
         sortable: false,
         value: "name"
       },
-      { text: "项目编号", value: "project_code" },
-      { text: "项目设计年份", value: "project_design_year" },
-      { text: "项目开工年份", value: "project_begin_date" },
-      { text: "项目类型", value: "project_type" },
-      { text: "施工单位", value: "project_unit" },
-      { text: "施工部位", value: "project_position" },
-      { text: "安全指标", value: "project_safety" },
-      { text: "Actions", value: "actions", sortable: false }
+       { text: "项目编号", value: "project_code" },
+       { text: "项目设计年份", value: "project_design_year" },
+       { text: "项目开工年份", value: "project_begin_date" },
+       { text: "项目类型", value: "project_type" },
+       { text: "施工单位", value: "project_unit" },
+       { text: "施工部位", value: "project_position" },
+       { text: "问题数", value: "project_problems" },
+       { text: "问题处理率", value: "project_handle_rate" },
+       { text: "工程进度", value: "project_process" },
+       { text: "Actions", value: "actions", sortable: false }
     ],
     desserts: [],
     editedIndex: -1,
@@ -175,80 +200,8 @@ export default {
 
   methods: {
     initialize() {
-      this.desserts = [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7
-        }
-      ];
+      this.desserts = projectData.projectList;
     },
-
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -293,3 +246,26 @@ export default {
   }
 };
 </script>
+<style>
+.building__chart {
+  margin-top: 1em;
+  padding: 1em;
+  height: 500px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+.building__chartlist {
+  display: flex;
+  overflow-x: auto;
+  flex: 1;
+}
+.building_apex {
+  width: 500px;
+  background-color: #90CAF9;
+  flex-shrink: 0;
+}
+.building__chartlist * + * {
+  margin-left:1em;
+}
+</style>

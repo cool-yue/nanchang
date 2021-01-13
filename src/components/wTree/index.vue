@@ -6,6 +6,7 @@
       :search="search"
       :filter="filter"
       :open.sync="open"
+      dense
     >
       <template v-slot:prepend="{ item }">
         <v-icon
@@ -23,7 +24,7 @@ export default {
   data() {
     return {
       items: [],
-      open: [1, 2],
+      open: ["530100000000"],
       search: null,
       caseSensitive: false
     };

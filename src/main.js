@@ -3,6 +3,7 @@ import App from "./App.vue";
 
 import vuetify from "./plugins/vuetify";
 import VueApexCharts from "vue-apexcharts";
+import "ol/ol.css";
 Vue.use(VueApexCharts);
 
 Vue.component("apexchart", VueApexCharts);
