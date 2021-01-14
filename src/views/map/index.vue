@@ -98,29 +98,30 @@ var style = new Style({
   })
 });
 
-var highlightStyle = new Style({
-  stroke: new Stroke({
-    color: "#f00",
-    width: 1
-  }),
-  fill: new Fill({
-    color: "rgba(255,0,0,0.1)"
-  }),
-  text: new Text({
-    font: "14px Calibri,sans-serif",
-    fill: new Fill({
-      color: "#000"
-    }),
-    stroke: new Stroke({
-      color: "#f00",
-      width: 3
-    })
-  })
-});
+// var highlightStyle = new Style({
+//   stroke: new Stroke({
+//     color: "#f00",
+//     width: 1
+//   }),
+//   fill: new Fill({
+//     color: "rgba(255,0,0,0.1)"
+//   }),
+//   text: new Text({
+//     font: "14px Calibri,sans-serif",
+//     fill: new Fill({
+//       color: "#000"
+//     }),
+//     stroke: new Stroke({
+//       color: "#f00",
+//       width: 3
+//     })
+//   })
+// });
 const source = new VectorSource({
   url: "/source/kunming.geojson",
   format: new GeoJSON()
 });
+
 const view = new View({
   center: [0, 0],
   zoom: 2,
@@ -160,6 +161,8 @@ export default {
           return style;
         }
       });
+      console.log("111",source.getFeatures());
+      console.log("222",vectorLayer.getSource());
       var map = new Map({
         layers: [
           new TileLayer({

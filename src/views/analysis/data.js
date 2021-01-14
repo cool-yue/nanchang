@@ -1,46 +1,65 @@
-export const lineChartOptions = {
-  series: [
-    {
-      name: "Desktops",
-      data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
-    }
-  ],
+import tableData from "./tableData.js";
+
+
+const chart_one_data = tableData.map(item => {
+  return {
+    name: item.name,
+    patrol_complete_rate: Number(item.patrol_complete_rate.replace("%", ""))
+  }
+}).so
+
+
+function extractRankedDataByTarget(key, handler) {
+  const result =  tableData.map(item => {
+    return {
+      name: item.name,
+      value: (
+        (
+          handler
+          && typeof handler === "function"
+        )
+        ? handler(item[key])
+        : item[key]
+      )
+    };
+  }).sort((first, second) => {
+    return second[key] - first[key];
+  });
+
+  return {
+    data: result.map(item => item.value),
+    categories: result.map(item => item.name)
+  };
+}
+
+console.log("过滤", extractRankedDataByTarget("patrol_complete_rate", function (value) {
+  return Number(value.replace("%", ""));
+}));
+
+
+
+// 巡河完成率排名
+export const chart_one = {
+  series: [{
+    data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]
+  }],
   chartOptions: {
     chart: {
-      height: 350,
-      type: "line",
-      zoom: {
-        enabled: false
+      type: 'bar',
+      height: 350
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
       }
     },
     dataLabels: {
       enabled: false
     },
-    stroke: {
-      curve: "straight"
-    },
-    title: {
-      text: "Product Trends by Month",
-      align: "left"
-    },
-    grid: {
-      row: {
-        colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-        opacity: 0.5
-      }
-    },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep"
-      ]
+      categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan',
+        'United States', 'China', 'Germany'
+      ],
     }
   }
 };

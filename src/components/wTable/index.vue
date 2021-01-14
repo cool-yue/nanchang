@@ -15,14 +15,15 @@
       :search="search"
       sort-by="calories"
       class="elevation-1"
+      :dense="dense"
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>河长列表</v-toolbar-title>
+          <v-toolbar-title>{{tableTitle}}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
+            <template v-slot:activator="{ on, attrs }" v-if="!noButton">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
                 添加
               </v-btn>
@@ -195,6 +196,18 @@ export default {
         default: () => {
           return [];
         }
+    },
+    noButton: {
+        type: Boolean,
+        default: false
+    },
+    dense: {
+        type: Boolean,
+        default: false
+    },
+    tableTitle: {
+        type: String,
+        default: "河长列表"
     }
   },
   computed: {

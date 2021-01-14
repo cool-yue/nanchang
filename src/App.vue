@@ -54,6 +54,7 @@ import Analysis from "./views/analysis";
 import Patrol from "./views/patrol";
 import OneMap from "./views/map";
 import System from "./views/system";
+import Thematic from "./views/thematic";
 
 //import WNav from "./components/wNav";
 import WDrop from "./components/wDrop";
@@ -69,11 +70,13 @@ export default {
       current_component: "Chief",
       items: [
         { title: "河长管理", icon: "mdi-account" },
-        { title: "巡河管理", icon: "mdi-waves" },
+        { title: "巡河管理", icon: "mdi-map-marker-path" },
+        { title: "河湖一览", icon: "mdi-waves"},
         { title: "施工建设管理", icon: "mdi-wrench" },
-        { title: "一张图平台", icon: "mdi-map-marker" },
-        { title: "大数据平台", icon: "mdi-database" },
-        { title: "系统管理", icon: "mdi-cog" }
+        { title: "专题展示", icon: "mdi-map-marker" },
+        { title: "实时监测", icon: "mdi-map-search" },
+        { title: "巡河统计", icon: "mdi-chart-line" },
+        { title: "水域岸线监督", icon: "mdi-quadcopter" }
       ]
     };
   },
@@ -85,6 +88,7 @@ export default {
     WDrop,
     OneMap,
     System,
+    Thematic,
     Login
   },
   beforeMount() {
@@ -101,9 +105,11 @@ export default {
         this.current_component = "Patrol";
       } else if (title === "施工建设管理") {
         this.current_component = "Building";
-      } else if (title === "一张图平台") {
+      } else if (title === "实时监测") {
         this.current_component = "OneMap";
-      } else if (title === "大数据平台") {
+      } else if (title === "专题展示") {
+        this.current_component = "Thematic";
+      } else if (title === "巡河统计") {
         this.current_component = "Analysis";
       } else if (title === "系统管理") {
         this.current_component = "System";

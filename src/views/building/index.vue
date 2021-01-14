@@ -266,6 +266,6 @@ export default {
   flex-shrink: 0;
 }
 .building__chartlist * + * {
-  margin-left:1em;
+  margin-left: 1em;
 }
 </style>
