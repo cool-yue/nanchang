@@ -39,7 +39,8 @@ const kunming_layer = new VectorLayer({
     style: function (feature) {
         kunming_style.getText().setText(feature.get("name"));
         return kunming_style;
-    }
+    },
+    name: "kunming"
 });
 
 

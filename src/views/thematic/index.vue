@@ -24,6 +24,7 @@
     fixed-header
     height="610px"
     dense
+    class="thematic__table"
 >
     <template v-slot:default>
       <thead>
@@ -148,7 +149,7 @@ export default {
 }
 .thematic__bar, .thematic__info  {
     position: absolute;
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.8);
     padding: 1em;
 }
 .thematic__bar {
@@ -157,10 +158,16 @@ export default {
 }
 .thematic__info {
     right: 1em;
+    font-weight: bold;
     min-width: 300px;
     top: var(--top);
 }
 .thematic__info > h3 {
     text-align: center;
+}
+
+/*此处覆盖默认样式*/
+.theme--light.v-data-table {
+    background-color: transparent;
 }
 </style>

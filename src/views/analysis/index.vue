@@ -1,30 +1,57 @@
 <template>
   <div class="analysis">
     <div class="analysis__data">
-        <w-table :table-data="table_data" :table-header="header_fileds" :no-button="true" dense table-title="巡河统计表"></w-table>
+        <w-table
+            :table-data="table_data"
+            :table-header="header_fileds"
+            :no-button="true"
+            dense
+            table-title="巡河统计表"
+            :fix-header="true"
+            :height="250"
+            :no-search="true"
+          >
+
+          <template v-slot:item.shouldUp="{ item }">
+           <v-chip
+              x-small
+              dark
+            >
+        {{ item.shouldUp }}
+      </v-chip>
+    </template>
+          </w-table>
     </div>
     <div class="analysis__charts">
 
 
     <div class="analysis__chart">
-    <!--
       <apexchart
-        type="line"
-        height="350"
-        :options="lineChartOptions.chartOptions"
-        :series="lineChartOptions.series"
-      ></apexchart>-->
-    </div>
-    <div class="analysis__chart">
-      <apexchart
-        :options="columnChartOptions.chartOptions"
-        :series="columnChartOptions.series"
+        type="bar"
+        height="380"
+        :options="chart_one.chartOptions"
+        :series="chart_one.series"
       ></apexchart>
     </div>
     <div class="analysis__chart">
       <apexchart
-        :options="pieChartOptions.chartOptions"
-        :series="pieChartOptions.series"
+        height="380"
+        :options="chart_two.chartOptions"
+        :series="chart_two.series"
+      ></apexchart>
+    </div>
+    <div class="analysis__chart">
+      <apexchart
+        height="380"
+        :options="chart_three.chartOptions"
+        :series="chart_three.series"
+      ></apexchart>
+    </div>
+    <div class="analysis__chart">
+      <apexchart
+        height="380"
+        :options="chart_four.chartOptions"
+        :series="chart_four.series"
       ></apexchart>
     </div>
     </div>
@@ -33,17 +60,23 @@
 <script>
 import {
   // lineChartOptions,
-  columnChartOptions,
-  pieChartOptions
+  chart_one,
+  chart_two,
+  chart_three,
+  chart_four
 } from "./data.js";
 import WTable from "../../components/wTable";
 import tableData from "./tableData.js";
+console.log(chart_one);
 export default {
   data() {
     return {
       //lineChartOptions,
-      columnChartOptions,
-      pieChartOptions,
+      chart_one,
+      chart_two,
+      chart_three,
+      chart_four,
+      //pieChartOptions,
       table_data: tableData,
       header_fileds : [
         {
@@ -81,12 +114,18 @@ export default {
         {
           text: "上报问题数量",
           value: "event_number"
+        },
+        {
+          text: "待改善分析决策",
+          value: "shouldUp"
         }
       ]
     };
   },
   components: {
     WTable
+  },
+  methods: {
   },
   mounted() {
     //console.log(lineChartOptions);
@@ -101,24 +140,24 @@ export default {
 }
 
 .analysis__data {
-  height: 400px;
+  height: 420px;
 }
 
 .analysis__charts {
   display: flex;
   overflow-x: auto;
   flex: 1;
-  background-color: white;
   align-items: center;
 }
 
 .analysis__charts * + * {
-  margin-right: 2em;
+  margin-left: 2em;
 }
 
 .analysis__chart {
   width: 50%;
   flex-shrink: 0;
   max-width: 500px;
+  background-color: white;
 }
 </style>

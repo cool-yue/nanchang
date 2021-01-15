@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      <v-text-field
+      <v-text-field v-if="!noSearch"
         v-model="search"
         append-icon="mdi-magnify"
         label="输入关键字综合查询"
@@ -15,8 +15,11 @@
       :search="search"
       sort-by="calories"
       class="elevation-1"
+      :fixed-header="fixHeader"
+      :height="height"
       :dense="dense"
     >
+      <slot></slot>
       <template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title>{{tableTitle}}</v-toolbar-title>
@@ -208,6 +211,18 @@ export default {
     tableTitle: {
         type: String,
         default: "河长列表"
+    },
+    fixHeader: {
+      type: Boolean,
+      default: false
+    },
+    height: {
+      type: Number,
+      default: undefined
+    },
+    noSearch: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {

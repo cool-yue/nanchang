@@ -45,8 +45,8 @@ const projectList = [
         project_unit: "施工方4",
         project_position: "河湖岸线",
         project_problems: "5",
-        project_handle_rate: "60%",
-        project_process: "在建"
+        project_handle_rate: "100%",
+        project_process: "已建"
     },
     {
         name:"工程5",

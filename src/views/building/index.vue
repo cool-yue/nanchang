@@ -130,17 +130,24 @@
              <div class="building_apex"
               v-for="(item, i) in charts"
               :key="i"
-             ></div>
+             >
+            <apexchart
+                height="380"
+                :options="item.chartOptions"
+                :series="item.series"
+            ></apexchart>
+             </div>
         </div>
     </div>
   </div>
 </template>
 <script>
 import projectData from "./data.building.js";
+import year_chart_data from "./data.year.js";
 console.log(projectData);
 export default {
   data: () => ({
-    charts:[{},{},{}],
+    charts:[year_chart_data.year_chart_one, year_chart_data.year_chart_two],
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -262,10 +269,11 @@ export default {
 }
 .building_apex {
   width: 500px;
-  background-color: #90CAF9;
+  background-color: white;
   flex-shrink: 0;
+  background-color: rgba(0, 0, 0, 0.1);
 }
-.building__chartlist * + * {
+.building__chartlist  * + * {
   margin-left: 1em;
 }
 </style>

@@ -36,7 +36,7 @@
         </v-container>
       </v-main>
       <v-footer app class="blue darken-1">
-        <div class="mx-auto white--text">&copy;昆明xxx公司</div>
+        <div class="mx-auto white--text">&copy;昆明院</div>
       </v-footer>
     </v-app>
     <v-app v-else>
@@ -55,6 +55,7 @@ import Patrol from "./views/patrol";
 import OneMap from "./views/map";
 import System from "./views/system";
 import Thematic from "./views/thematic";
+import Drone from "./views/drone"
 
 //import WNav from "./components/wNav";
 import WDrop from "./components/wDrop";
@@ -89,7 +90,8 @@ export default {
     OneMap,
     System,
     Thematic,
-    Login
+    Login,
+    Drone
   },
   beforeMount() {
     if (sessionStorage) {
@@ -113,6 +115,8 @@ export default {
         this.current_component = "Analysis";
       } else if (title === "系统管理") {
         this.current_component = "System";
+      } else if (title === "水域岸线监督") {
+         this.current_component = "Drone";
       }
     },
     hanlde_success_login() {
