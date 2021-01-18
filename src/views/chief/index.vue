@@ -9,10 +9,10 @@
           流域
         </v-tab>
         <v-tab-item>
-          <w-tree :tree-data="region_data"></w-tree>
+          <w-tree :tree-data="region_data" @input="hanldeInput"></w-tree>
         </v-tab-item>
         <v-tab-item>
-          <w-tree :tree-data="river_data"></w-tree>
+          <w-tree :tree-data="river_data" @input="hanldeInput"></w-tree>
         </v-tab-item>
       </v-tabs>
       <v-tab-item> </v-tab-item>
@@ -128,6 +128,11 @@ export default {
   components: {
     WTable,
     WTree
+  },
+  methods: {
+    hanldeInput(checkedArr) {
+      console.log(checkedArr);
+    }
   },
   mounted() {
     console.log(chiefData);

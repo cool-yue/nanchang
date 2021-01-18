@@ -1,6 +1,6 @@
 <template>
   <div class="map">
-    <div id="map__content" class="map__content"><div id="popup"></div></div>
+    <div id="map__content" class="map__content"></div>
     <div id="info">&nbsp;</div>
     <div class="map__board">
         <div class="map__rain">
@@ -56,10 +56,19 @@
           <v-text-field v-model="search_value" label="输入关键字"></v-text-field>
         </v-col>
         <v-col cols="11" md="3">
-          <v-btn class="mt-3 mr-6">搜索</v-btn>
+          <v-btn class="mt-3 mr-6" @click="handleSearchClick">搜索</v-btn>
         </v-col>
       </v-row>
     </div>
+<div id="map__popup" class="map__popup">
+    <h4></h4>
+    <div class="map__info">
+         <div class="map__inspector"><span class="map__key"></span><span class="map__value pl-6"></span></div>
+         <div class="map__video">
+             <video src="/source/巡河.mp4" height="120"></video>
+         </div>
+    </div>
+</div>
   </div>
 </template>
 <script>
@@ -139,6 +148,8 @@ const pathLayer = new VectorLayer({
     return style;
   }
 });
+let global_map;
+let global_icon_source;
 
 export default {
   data() {
@@ -161,9 +172,7 @@ export default {
           return style;
         }
       });
-      console.log("111",source.getFeatures());
-      console.log("222",vectorLayer.getSource());
-      var map = new Map({
+      global_map = new Map({
         layers: [
           new TileLayer({
             source: new OSM()
@@ -174,10 +183,9 @@ export default {
         target: "map__content",
         view
       });
-      console.log("map在哪", map);
       var featureOverlay = new VectorLayer({
         source: new VectorSource(),
-        map: map,
+        map: global_map,
         style: function(feature) {
           highlightStyle.getText().setText(feature.get("name"));
           return highlightStyle;
@@ -215,17 +223,54 @@ export default {
       //   var pixel = map.getEventPixel(evt.originalEvent);
       //   displayFeatureInfo(pixel);
       // });
-      var element = document.getElementById('popup');
+      setTimeout(this.targetKunming, 1000);
+      //setTimeout(this.targetIcon, 3000);
+    },
+    renderVideo() {
+      const element = document.getElementById('map__popup');
+      const inspector = element.querySelector(".map__inspector");
+      const video =  element.querySelector(".map__video");
+      inspector.style.display = "none";
+      video.style.display = "block";
+    },
+    renderInspector(type) {
+       const element = document.getElementById('map__popup');
+       const inspector = element.querySelector(".map__inspector");
+       const video =  element.querySelector(".map__video");
+       inspector.style.display = "block";
+       video.style.display = "none";
 
-      var popup = new Overlay({
-        element: element,
-        positioning: 'bottom-center',
-        stopEvent: false,
-        offset: [0, -50],
-      });
-      map.addOverlay(popup);
-      map.on("click", function(evt) {
-        var feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+        if (type === "雨量站-异常") {
+            inspector.querySelector(".map__key").textContent = "雨量站数据:";
+            inspector.querySelector(".map__value").textContent = "200MM";
+            inspector.querySelector(".map__value").style.color = "#F9A825";
+        } else if (type === "雨量站-正常") {
+            inspector.querySelector(".map__key").textContent = "水位站数据:";
+            inspector.querySelector(".map__value").textContent = "30MM";
+            inspector.querySelector(".map__value").style.color = "#00C853";
+
+        } else if (type === "水位站-异常") {
+            inspector.querySelector(".map__key").textContent = "水位站数据:";
+            inspector.querySelector(".map__value").textContent = "10m";
+            inspector.querySelector(".map__value").style.color = "#F9A825";
+        } else if (type === "水位站-正常") {
+            inspector.querySelector(".map__key").textContent = "水位站数据:";
+            inspector.querySelector(".map__value").textContent = "8m";
+            inspector.querySelector(".map__value").style.color = "#00C853";
+        }
+    },
+    renderPopup(title) {
+      if (title.indexOf("视频") >= 0) {
+        return this.renderVideo();
+      }
+      return this.renderInspector(title);
+    },
+    initClickEvent() {
+      const that = this;
+      const element = document.getElementById('map__popup');
+      global_map && global_map.on("click", function(evt) {
+        console.log(evt.getEventPixel);
+        var feature = global_map.forEachFeatureAtPixel(evt.pixel, function (feature) {
           return feature;
          });
          if (
@@ -234,16 +279,29 @@ export default {
          ) {
            let coordinates = feature.getGeometry().getCoordinates();
            console.log(coordinates);
-           popup.setPosition(coordinates);
-           element.textContent = feature.get("name");
+           console.log(global_map.getPixelFromCoordinate(coordinates));
+           console.log(!element.classList.contains("map__popup--show"));
+
+           const title = feature.get("name");
+           element.querySelector("h4").textContent = title;
+           console.log(this);
+           that.renderPopup(title);
            //element.style.display = "block";
+            console.log("添加显示");
+                 const [x, y] = global_map.getPixelFromCoordinate(coordinates);
+                 console.log(x, y);
+                 element.style.left = (x - 90) + "px";
+                 element.style.top = (y - 220) + "px";
+                 element.classList.add("map__popup--show");
          } else {
-           console.log("关闭");
-           element.style.display = "none";
+             console.log("关闭");
+             element.classList.remove("map__popup--show")
          }
       });
-      setTimeout(this.targetKunming, 1000);
-      //setTimeout(this.targetIcon, 3000);
+      global_map.on("movestart", () => {
+          console.log("关闭");
+          element.classList.remove("map__popup--show")
+      });
     },
     targetIcon() {
       view.fit(new Point([102.704412, 25.282165]));
@@ -257,8 +315,23 @@ export default {
     genRainIcon(coordinates, isValid = true) {
         return iconGen.rainIconFeature(coordinates, isValid);
     },
+    getHighligthIcon(coordinates, isValid = true) {
+        return iconGen.highlightIconFeature(coordinates, isValid);
+    },
     addIconFeature(feature) {
       iconSource.addFeature(feature)
+    },
+    handleSearchClick() {
+      this.addHightLight();
+    },
+    addHightLight() {
+        const iconFeature16 = this.getHighligthIcon([102.75959014892577, 24.86338755462191]);
+        const iconFeature17 = this.getHighligthIcon([102.67684936523438, 24.79670834894575]);
+        const iconFeature18 = this.getHighligthIcon([102.63908386230469, 24.989014303757518]);
+        global_icon_source.addFeature(iconFeature16);
+        global_icon_source.addFeature(iconFeature17);
+        global_icon_source.addFeature(iconFeature18);
+
     },
     renderIconLayer() {
        const iconFeature1 = this.genRainIcon([102.56428241729736, 24.99189272112795]);
@@ -303,6 +376,7 @@ export default {
           iconFeature13, iconFeature14, iconFeature15
         ]
       });
+      global_icon_source = iconSource;
       const iconLayer = new VectorLayer({
         source: iconSource
       });
@@ -311,6 +385,7 @@ export default {
   },
   mounted() {
     this.toKunming();
+    this.initClickEvent();
   }
 };
 </script>
@@ -384,5 +459,37 @@ export default {
   right: 1em;
   top: 5em;
   background-color: rgba(255, 255, 255, 0.8)
+}
+.map__popup {
+  position: absolute;
+  width: 250px;
+  height: 200px;
+  top: 1em;
+  left: 10em;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  padding: 1em;
+  display: none;
+}
+
+.map__popup::before {
+  position: absolute;
+  content: "";
+  border: 0.5em solid #4CAF50;
+  border-top-width: 0.75em;
+  border-right-color: transparent;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  bottom: -1.25em;
+  left: 5em;
+}
+.map__popup--show {
+  display: block;
+}
+.map__popup--hide {
+  display: none;
+}
+.map__popup > h4 {
+  text-align: center;
 }
 </style>

@@ -1,11 +1,54 @@
 <template>
   <div class="app_container">
     <v-app v-if="is_login">
-      <v-navigation-drawer app dark v-if="show_nav">
-        <v-list-item-group v-model="selected_item">
-          <v-list dense nav>
-            <v-list-item
-              v-for="item in items"
+      <v-navigation-drawer   app dark v-if="show_nav" :width="330">
+        <v-list-item-group  v-model="selected_item">
+          <v-list nav>
+            <v-list-group
+                prepend-icon="mdi-account"
+            >
+               <template v-slot:activator>
+                   <v-list-item-title>河湖长信息管理</v-list-item-title>
+               </template>
+               <v-list-item
+              v-for="item in items.slice(0, 2)"
+              :key="item.title"
+              @click="change_current_componemnt(item.title)"
+              link
+            >
+              <!-- <v-list-item-icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon> -->
+              <v-list-item-content class="pl-14">
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            </v-list-group>
+
+            <v-list-group
+                 prepend-icon="mdi-map-marker-path"
+            >
+                <template v-slot:activator>
+                   <v-list-item-title>水利大数据分析决策平台</v-list-item-title>
+               </template>
+                <v-list-item
+              v-for="item in items.slice(4, 6)"
+              :key="item.title"
+              @click="change_current_componemnt(item.title)"
+              link
+            >
+              <!-- <v-list-item-icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon> -->
+              <v-list-item-content class="pl-14">
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            </v-list-group>
+
+
+                           <v-list-item
+              v-for="item in items.slice(3, 4)"
               :key="item.title"
               @click="change_current_componemnt(item.title)"
               link
@@ -18,7 +61,30 @@
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-          </v-list>
+
+
+
+               <v-list-group
+                 prepend-icon="mdi-chart-line"
+            >
+                <template v-slot:activator>
+                   <v-list-item-title>水利一张图</v-list-item-title>
+               </template>
+                <v-list-item
+              v-for="item in items.slice(6, 8)"
+              :key="item.title"
+              @click="change_current_componemnt(item.title)"
+              link
+            >
+              <!-- <v-list-item-icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon> -->
+              <v-list-item-content class="pl-14">
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            </v-list-group>
+                </v-list>
         </v-list-item-group>
       </v-navigation-drawer>
       <v-app-bar app class="blue darken-1">
@@ -73,11 +139,11 @@ export default {
         { title: "河长管理", icon: "mdi-account" },
         { title: "巡河管理", icon: "mdi-map-marker-path" },
         { title: "河湖一览", icon: "mdi-waves"},
-        { title: "施工建设管理", icon: "mdi-wrench" },
+        { title: "水利工程施工建设管理", icon: "mdi-wrench" },
         { title: "专题展示", icon: "mdi-map-marker" },
         { title: "实时监测", icon: "mdi-map-search" },
+        { title: "水域岸线监督", icon: "mdi-quadcopter" },
         { title: "巡河统计", icon: "mdi-chart-line" },
-        { title: "水域岸线监督", icon: "mdi-quadcopter" }
       ]
     };
   },
@@ -105,7 +171,7 @@ export default {
         this.current_component = "Chief";
       } else if (title === "巡河管理") {
         this.current_component = "Patrol";
-      } else if (title === "施工建设管理") {
+      } else if (title === "水利工程施工建设管理") {
         this.current_component = "Building";
       } else if (title === "实时监测") {
         this.current_component = "OneMap";

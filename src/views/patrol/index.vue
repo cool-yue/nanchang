@@ -88,7 +88,7 @@
                              <div class="partrol__information"><span>总长度:</span><span>{{info.total}}</span></div>
                              <div class="partrol__information"><span>当前长度:</span><span>{{info.current}}</span></div>
                              <div class="partrol__information"><span>占比:</span><span>{{info.percent}}</span></div>
-                             <div class="partrol__information">有效规则: 在有效区域内,巡河长度必须不少于总长度的百分之70</div>
+                             <div class="partrol__information">有效规则: 在有效区域内,巡河长度必须不少于总长度的百分之50</div>
                          </div>
                    </div>
             </v-tab-item>
@@ -188,7 +188,7 @@ export default {
         start_time: "2021-01-10 11:00:32",
         end_time: "2021-01-10 11:10:32",
         river_segment_distance: "3.1km",
-        patrol_distance: "1.92km",
+        patrol_distance: "1.3km",
         intervel: "10",
         effort: "无效"
       }
@@ -237,8 +237,8 @@ export default {
     },
     okToBad() {
       this.info.effort = "无效";
-      this.info.percent = "61.9%";
-      this.info.current = "1.92km";
+      this.info.percent = "41.9%";
+      this.info.current = "1.3km";
     },
     badToOk() {
       this.info.effort = "有效";
