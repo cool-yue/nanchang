@@ -102,7 +102,7 @@
         </v-container>
       </v-main>
       <v-footer app class="blue darken-1">
-        <div class="mx-auto white--text">&copy;昆明院</div>
+        <div class="mx-auto white--text">&copy;中国电建集团昆明勘测设计研究院有限公司</div>
       </v-footer>
     </v-app>
     <v-app v-else>

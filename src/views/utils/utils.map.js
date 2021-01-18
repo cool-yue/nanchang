@@ -10,7 +10,7 @@ import { Fill, Stroke, Style, Text, Icon } from "ol/style";
 
 const kunming_style = new Style({
     fill: new Fill({
-        color: "rgba(0, 0, 0, 0.8)"
+        color: "rgba(255, 255, 255, 0.3)"
     }),
     stroke: new Stroke({
         color: "#319FD3",

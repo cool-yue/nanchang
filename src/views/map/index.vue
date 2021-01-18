@@ -89,7 +89,7 @@ import Overlay from 'ol/Overlay';
 
 var style = new Style({
   fill: new Fill({
-    color: "rgba(0, 0, 0, 0.8)"
+    color: "rgba(255, 255, 255, 0.8)"
   }),
   stroke: new Stroke({
     color: "#319FD3",
@@ -466,16 +466,17 @@ export default {
   height: 200px;
   top: 1em;
   left: 10em;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 1em;
   padding: 1em;
   display: none;
+  color: white;
 }
 
 .map__popup::before {
   position: absolute;
   content: "";
-  border: 0.5em solid #4CAF50;
+  border: 0.5em solid rgba(0, 0, 0, 0.8);
   border-top-width: 0.75em;
   border-right-color: transparent;
   border-left-color: transparent;
