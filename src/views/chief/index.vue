@@ -115,9 +115,9 @@ const header_fileds3 = [
 export default {
   data() {
     return {
-      table_data1: chiefData.chief.chief,
-      table_data2: chiefData.chief.patrol,
-      table_data3: chiefData.chief.task,
+      table_data1: [],
+      table_data2: [],
+      table_data3: [],
       header_fileds1,
       header_fileds2,
       header_fileds3,
@@ -132,6 +132,18 @@ export default {
   methods: {
     hanldeInput(checkedArr) {
       console.log(checkedArr);
+      if (
+        checkedArr[0] === "E7706716CCBC48BE8D89548545C9690F"
+        || checkedArr[0] === "530111000000"
+      ) {
+        this.table_data1 = chiefData.chief.chief;
+        this.table_data2 =  chiefData.chief.patrol;
+        this.table_data3 = chiefData.chief.task
+      } else {
+        this.table_data1 = [];
+        this.table_data2 = [];
+        this.table_data3 = [];
+      }
     }
   },
   mounted() {

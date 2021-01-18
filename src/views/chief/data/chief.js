@@ -11,28 +11,28 @@ export default {
     {
       name: "河长2",
       gender: "男",
-      level: "水利局局长",
+      level: "水利局副局长",
       duty_river: "宝象河",
       tel: "18868886888"
     },
     {
       name: "河长3",
       gender: "男",
-      level: "水利局局长",
+      level: "水利局科员",
       duty_river: "宝象河",
       tel: "18868886888"
     },
     {
       name: "河长4",
       gender: "男",
-      level: "水利局局长",
+      level: "水利局处长",
       duty_river: "宝象河",
       tel: "18868886888"
     },
     {
       name: "河长5",
       gender: "男",
-      level: "水利局局长",
+      level: "水利局科员",
       duty_river: "宝象河",
       tel: "18868886888"
     }
@@ -46,15 +46,15 @@ export default {
       event_number: "3"
     },
     {
-      name: "河长1",
-      river_segment: "古城河",
+      name: "河长2",
+      river_segment: "宝象河",
       patrol_river_distance: "20",
       patrol_time_total: "40",
       event_number: "1"
     },
     {
-      name: "河长1",
-      river_segment: "白鱼河",
+      name: "河长3",
+      river_segment: "宝象河",
       patrol_river_distance: "15",
       patrol_time_total: "4",
       event_number: "0"
