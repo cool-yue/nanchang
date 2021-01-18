@@ -1,4 +1,4 @@
-import { Fill, Stroke, Style, Text, Icon } from "ol/style";
+import { Fill, Stroke, Style, Text, Icon, Circle as CircleStyle } from "ol/style";
 /**
  *  index 0 正常  1异常
  */
@@ -39,5 +39,25 @@ export default {
               src: "/source/摄像头异常.svg",
             })
         })
-    ]
+    ],
+    hightLightStyle: [
+      new Style({
+      image: new  CircleStyle({
+        radius: 30,
+        stroke: new Stroke({
+          color: 'rgb(255, 0, 0)',
+          width: 2,
+        }),
+      }),
+    }),
+    new Style({
+      image: new  CircleStyle({
+        radius: 30,
+        stroke: new Stroke({
+          color: 'rgba(255, 0, 0)',
+          width: 2,
+        }),
+      }),
+    })
+  ]
 };

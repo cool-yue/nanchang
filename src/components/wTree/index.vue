@@ -6,6 +6,9 @@
       :search="search"
       :filter="filter"
       :open.sync="open"
+      v-model="selection"
+      selection-type="independent"
+      @update:active="handleInput"
       dense
     >
       <template v-slot:prepend="{ item }">
@@ -23,6 +26,7 @@ export default {
   name: "wTree",
   data() {
     return {
+      selection: [],
       items: [],
       open: ["530100000000"],
       search: null,
@@ -37,6 +41,12 @@ export default {
       }
     }
   },
+  methods: {
+    handleInput(checked_arr) {
+      console.log(checked_arr);
+      this.$emit("input", checked_arr);
+    }
+  },
   computed: {
     filter() {
       return this.caseSensitive
@@ -46,6 +56,9 @@ export default {
   },
   watch: {
     treeData(newValue) {
+      console.log(newValue);
+    },
+    selection(newValue) {
       console.log(newValue);
     }
   }

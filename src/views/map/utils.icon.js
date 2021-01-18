@@ -3,9 +3,9 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 
 /**
- * 
- * @param {String} type 
- * @param {String} key 
+ *
+ * @param {String} type
+ * @param {String} key
  */
 
 function typeToKey(type) {
@@ -15,6 +15,8 @@ function typeToKey(type) {
         return "waterStyle";
     } else if (type.indexOf("雨量站") >= 0) {
         return "rainStyle";
+    } else if (type.indexOf("高亮") >= 0) {
+        return "hightLightStyle";
     }
 }
 
@@ -28,7 +30,11 @@ function IconFeatureGen(type, key = typeToKey(type)) {
         }
         const iconFeature = new Feature({
             geometry: new Point(coordinates),
-            name: type,
+            name: type + (
+                isValid
+                ? "-正常"
+                : "-异常"
+            )
         });
         iconFeature.setStyle(
             isValid
@@ -43,5 +49,6 @@ function IconFeatureGen(type, key = typeToKey(type)) {
 export default {
     rainIconFeature: IconFeatureGen("雨量站"),
     waterIconFeature: IconFeatureGen("水位站"),
-    videoIconFeature: IconFeatureGen("视频站")
+    videoIconFeature: IconFeatureGen("视频站"),
+    highlightIconFeature: IconFeatureGen("高亮")
 };
