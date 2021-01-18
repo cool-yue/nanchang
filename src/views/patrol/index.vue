@@ -88,7 +88,7 @@
                              <div class="partrol__information"><span>总长度:</span><span>{{info.total}}</span></div>
                              <div class="partrol__information"><span>当前长度:</span><span>{{info.current}}</span></div>
                              <div class="partrol__information"><span>占比:</span><span>{{info.percent}}</span></div>
-                             <div class="partrol__information">有效规则: 在有效区域内,巡河长度必须不少于总长度的百分之70</div>
+                             <div class="partrol__information">有效规则: 在有效区域内,巡河长度必须不少于指定河段长度的百分之70</div>
                          </div>
                    </div>
             </v-tab-item>
